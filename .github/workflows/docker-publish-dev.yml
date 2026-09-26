@@ -1,18 +1,22 @@
 name: Publish dev Docker image
 
-# Ad-hoc, manually-dispatched image publish for local testing. Deliberately
-# kept off feature branches (lives only on ci/docker-dev-build) so it never
-# shows up in a PR diff if a feature branch is later contributed upstream.
-# Pass the branch/tag/sha to build via the `ref` input — the workflow
-# checks that out explicitly rather than building its own branch.
+# Ad-hoc image publish for local testing. Deliberately kept off feature
+# branches (lives only on ci/docker-dev-build) so it never shows up in a PR
+# diff if a feature branch is later contributed upstream.
+#
+# Triggered by push to THIS branch rather than workflow_dispatch: dispatch
+# only becomes available once a workflow file exists on the repo's default
+# branch, which would mean adding it to main. Push avoids that entirely —
+# every push to ci/docker-dev-build rebuilds TARGET_REF below. To build a
+# different branch, edit TARGET_REF and push again.
 
 on:
-  workflow_dispatch:
-    inputs:
-      ref:
-        description: 'Branch, tag, or commit SHA to build'
-        required: true
-        default: 'claude/build-plate-selector'
+  push:
+    branches:
+      - ci/docker-dev-build
+
+env:
+  TARGET_REF: claude/build-plate-selector
 
 permissions:
   contents: read
@@ -22,16 +26,16 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout requested ref
+      - name: Checkout target ref
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.ref }}
+          ref: ${{ env.TARGET_REF }}
 
       - name: Compute tags
         id: vars
         run: |
           echo "sha_short=$(git rev-parse --short=7 HEAD)" >> "$GITHUB_OUTPUT"
-          echo "branch_slug=$(echo '${{ inputs.ref }}' | tr '/' '-')" >> "$GITHUB_OUTPUT"
+          echo "branch_slug=$(echo "$TARGET_REF" | tr '/' '-')" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
