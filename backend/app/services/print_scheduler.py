@@ -453,7 +453,9 @@ def _fill_plate_types(item: PrintQueueItem) -> bool:
             if v.required_plate_type is None and v.library_file is not None:
                 v.required_plate_type = _derive_plate_type(None, v.library_file, v.plate_id)
                 changed = True
-    elif item.required_plate_type is None and (item.archive is not None or item.library_file is not None):
+    # The item's own column too: after a variant is resolved onto it (and the
+    # print bounced back to pending) the item points at that file directly.
+    if item.required_plate_type is None and (item.archive is not None or item.library_file is not None):
         item.required_plate_type = _derive_plate_type(item.archive, item.library_file, item.plate_id)
         changed = True
     return changed
@@ -3127,7 +3129,10 @@ class PrintScheduler:
         item.nozzle_rack_choice = variant.nozzle_rack_choice
         item.filament_overrides = variant.filament_overrides
         item.required_filament_types = variant.required_filament_types
-        item.required_plate_type = variant.required_plate_type
+        # Only when known: a variant not yet derived (tracking was off) must not
+        # blank the item's own value.
+        if variant.required_plate_type is not None:
+            item.required_plate_type = variant.required_plate_type
         if variant.print_time_seconds is not None:
             # The row carried the shortest candidate's estimate so SJF could order
             # it before a printer was known; now that one is chosen, record what is

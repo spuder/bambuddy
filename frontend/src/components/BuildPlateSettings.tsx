@@ -7,31 +7,20 @@ import type { BuildPlate } from '../api/client';
 import { useToast } from '../contexts/ToastContext';
 import { Card, CardContent, CardHeader } from './Card';
 import { ConfirmModal } from './ConfirmModal';
-import { BUILD_PLATES_QUERY_KEY, baseTypeIcon, groupPlatesByBaseType, plateImage } from '../utils/buildPlates';
-
+import { BUILD_PLATES_QUERY_KEY, groupPlatesByBaseType, plateImage } from '../utils/buildPlates';
+import { PlateImage } from './PlateImage';
 
 interface BuildPlateSettingsProps {
   enabled: boolean;
   onToggle: (enabled: boolean) => void;
 }
 
-/** Plate photo, falling back to the base type's icon when the photo is missing. */
+/** Plate photo, or a generic icon for a plate with no photo and no known type. */
 function PlatePhoto({ plate }: { plate: BuildPlate }) {
-  const [failed, setFailed] = useState(false);
-  const src = failed ? baseTypeIcon(plate.base_type) : plateImage(plate);
-  if (!src) {
+  if (!plateImage(plate)) {
     return <Layers className="w-8 h-8 text-bambu-gray" />;
   }
-  return (
-    <img
-      src={src}
-      alt=""
-      className="w-full h-full object-cover"
-      onError={() => {
-        if (!failed) setFailed(true);
-      }}
-    />
-  );
+  return <PlateImage plate={plate} className="w-full h-full object-cover" />;
 }
 
 /**

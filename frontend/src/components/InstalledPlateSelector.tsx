@@ -4,7 +4,8 @@ import { api } from '../api/client';
 import type { Printer } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { BUILD_PLATES_QUERY_KEY, groupPlatesByBaseType, plateImage } from '../utils/buildPlates';
+import { BUILD_PLATES_QUERY_KEY, groupPlatesByBaseType } from '../utils/buildPlates';
+import { PlateImage } from './PlateImage';
 
 /**
  * Which build plate is on this printer (#1306), as a one-click swap.
@@ -43,11 +44,10 @@ export function InstalledPlateSelector({ printer }: { printer: Printer }) {
   const installed = plates.find((p) => p.id === installedId) ?? null;
   const offered = plates.filter((p) => p.enabled || p.id === installedId);
   const canSwap = hasPermission('printers:control');
-  const icon = installed ? plateImage(installed) : null;
 
   return (
     <div className="flex items-center gap-1.5 mt-1 min-w-0" onClick={(e) => e.stopPropagation()}>
-      {icon && <img src={icon} alt="" className="w-4 h-4 rounded-sm object-cover flex-shrink-0" />}
+      {installed && <PlateImage plate={installed} className="w-4 h-4 rounded-sm object-cover flex-shrink-0" />}
       <select
         value={installedId ?? ''}
         disabled={!canSwap || mutation.isPending}

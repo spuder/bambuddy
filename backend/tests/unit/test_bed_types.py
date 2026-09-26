@@ -82,3 +82,9 @@ class TestPlateMismatch:
             plate_mismatch(SMOOTH, "smooth_pei", 2, "3D Effect – Carbon Fiber")
             == "needs 3D Effect – Carbon Fiber, has Smooth PEI Plate"
         )
+
+    def test_specific_plate_whose_type_was_edited_away(self):
+        """A custom plate re-typed after a job asked for it no longer fits."""
+        retyped = InstalledPlate(id=2, name="Custom", base_type="textured_pei")
+        assert plate_mismatch(retyped, "smooth_pei", 2) == "needs Smooth PEI / High Temp Plate, has Custom"
+        assert plate_mismatch(retyped, PLATE_TYPE_ANY, 2) is None

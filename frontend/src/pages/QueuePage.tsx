@@ -67,7 +67,8 @@ import { api, ApiError } from '../api/client';
 import { PipelineRunsView } from './PipelineRunsPage';
 import { type TimeFormat, formatETA, formatDuration, formatRelativeTime, parseUTCDate } from '../utils/date';
 import { getBedTypeInfo } from '../utils/bedType';
-import { BUILD_PLATES_QUERY_KEY, plateImage } from '../utils/buildPlates';
+import { BUILD_PLATES_QUERY_KEY } from '../utils/buildPlates';
+import { PlateImage } from '../components/PlateImage';
 import type { PrintQueueItem, PrintQueueBulkUpdate, Permission, CalibrationMode } from '../api/client';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
@@ -673,10 +674,14 @@ function SortableQueueItem({
               // A job that asked for one specific plate (e.g. a 3D Effect
               // sheet) names that plate instead of the generic type (#1306).
               const label = requiredPlate ? requiredPlate.name : bed.label;
-              const icon = requiredPlate ? plateImage(requiredPlate) ?? bed.icon : bed.icon;
+              const iconClass = 'w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain';
               return (
                 <span className="flex items-center gap-1 sm:gap-1.5" title={label}>
-                  <img src={icon} alt="" className="w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain" />
+                  {requiredPlate ? (
+                    <PlateImage plate={requiredPlate} className={iconClass} fallbackSrc={bed.icon} />
+                  ) : (
+                    <img src={bed.icon} alt="" className={iconClass} />
+                  )}
                   <span className="truncate max-w-[120px]">{label}</span>
                 </span>
               );

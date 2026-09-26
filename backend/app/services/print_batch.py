@@ -89,6 +89,7 @@ CLONED_VARIANT_COLUMNS = (
     "nozzle_rack_choice",
     "filament_overrides",
     "required_filament_types",
+    "required_plate_type",
     "print_time_seconds",
 )
 

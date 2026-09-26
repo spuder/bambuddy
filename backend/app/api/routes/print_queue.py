@@ -1003,6 +1003,10 @@ async def add_to_queue(
         required_plate_type = PLATE_TYPE_ANY
     else:
         required_plate_type = _plate_type_from_3mf(file_path, data.plate_id)
+    if variant_specs and data.required_plate_id is not None:
+        # Each alternative is its own slice and may be for a different plate
+        # type, so one specific plate cannot be valid for all of them.
+        raise HTTPException(400, "A specific build plate cannot be combined with printer alternatives")
     await _validate_required_plate(db, data.required_plate_id, required_plate_type)
 
     # Validate quantity
@@ -2096,7 +2100,19 @@ async def update_queue_item(
         update_data["required_plate_type"] = _plate_type_from_3mf(
             await _resolve_source_path(db, item), update_data["plate_id"]
         )
-    if "required_plate_id" in update_data or "required_plate_type" in update_data:
+        # A specific plate chosen for the old plate may not fit the new one.
+        # The caller did not ask about it, so drop it rather than reject an
+        # edit that only moved the job to another plate of the file.
+        if "required_plate_id" not in update_data and item.required_plate_id is not None:
+            from backend.app.models.build_plate import BuildPlate
+
+            new_type = update_data["required_plate_type"]
+            old_plate_type = await db.scalar(
+                select(BuildPlate.base_type).where(BuildPlate.id == item.required_plate_id)
+            )
+            if new_type and new_type != PLATE_TYPE_ANY and old_plate_type != new_type:
+                update_data["required_plate_id"] = None
+    if "required_plate_id" in update_data:
         await _validate_required_plate(
             db,
             update_data.get("required_plate_id", item.required_plate_id),

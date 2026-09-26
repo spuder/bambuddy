@@ -239,6 +239,46 @@ class TestQueuePlateConstraint:
 
     @pytest.mark.asyncio
     @pytest.mark.integration
+    async def test_moving_to_another_plate_drops_an_incompatible_specific_plate(
+        self, async_client: AsyncClient, printer_factory, archive, plates
+    ):
+        """Carbon Fiber fits plate 2 (Smooth PEI) but not plate 1 (Textured).
+        Editing only the plate must not be refused over it."""
+        printer = await printer_factory()
+        cf = plates["3d_effect_carbon_fiber"].id
+        created = await async_client.post(
+            "/api/v1/queue/",
+            json={"printer_id": printer.id, "archive_id": archive.id, "plate_id": 2, "required_plate_id": cf},
+        )
+        item_id = created.json()["id"]
+        response = await async_client.patch(f"/api/v1/queue/{item_id}", json={"plate_id": 1})
+        assert response.status_code == 200, response.text
+        assert response.json()["required_plate_type"] == "textured_pei"
+        assert response.json()["required_plate_id"] is None
+
+    @pytest.mark.asyncio
+    @pytest.mark.integration
+    async def test_moving_to_a_compatible_plate_keeps_the_specific_plate(
+        self, async_client: AsyncClient, printer_factory, db_session, tmp_path, plates
+    ):
+        from backend.app.models.archive import PrintArchive
+
+        path = _write_3mf(tmp_path / "two_smooth.3mf", ["High Temp Plate", "High Temp Plate"])
+        archive = PrintArchive(filename="s.3mf", file_path=str(path), file_size=1, status="completed")
+        db_session.add(archive)
+        await db_session.commit()
+        printer = await printer_factory()
+        cf = plates["3d_effect_carbon_fiber"].id
+        created = await async_client.post(
+            "/api/v1/queue/",
+            json={"printer_id": printer.id, "archive_id": archive.id, "plate_id": 1, "required_plate_id": cf},
+        )
+        response = await async_client.patch(f"/api/v1/queue/{created.json()['id']}", json={"plate_id": 2})
+        assert response.status_code == 200, response.text
+        assert response.json()["required_plate_id"] == cf
+
+    @pytest.mark.asyncio
+    @pytest.mark.integration
     async def test_unknown_plate_type_is_rejected(self, async_client: AsyncClient, printer_factory, archive):
         printer = await printer_factory()
         response = await async_client.post(

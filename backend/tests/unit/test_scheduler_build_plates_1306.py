@@ -370,3 +370,40 @@ class TestWake:
 
         assert (woken, attempted) == (None, None)
         power_on.assert_not_awaited()
+
+
+class TestVariantResolution:
+    def test_an_underived_variant_does_not_blank_the_items_plate_type(self):
+        """With tracking off, variants are never derived. Resolving one must not
+        wipe what the item already knows."""
+        from types import SimpleNamespace
+
+        variant = SimpleNamespace(
+            library_file_id=5,
+            library_file=None,
+            target_model="X1C",
+            plate_id=1,
+            ams_mapping=None,
+            nozzle_mapping=None,
+            nozzle_rack_choice=None,
+            filament_overrides=None,
+            required_filament_types=None,
+            required_plate_type=None,
+            print_time_seconds=None,
+        )
+        item = SimpleNamespace(required_plate_type="textured_pei", print_time_seconds=None)
+        candidate = _ModelCandidate(
+            target_model="X1C",
+            sliced_for="X1C",
+            required_filament_types=None,
+            filament_overrides=None,
+            variant=variant,
+        )
+
+        PrintScheduler()._resolve_variant(item, candidate)
+
+        assert item.required_plate_type == "textured_pei"
+
+        variant.required_plate_type = "smooth_pei"
+        PrintScheduler()._resolve_variant(item, candidate)
+        assert item.required_plate_type == "smooth_pei"

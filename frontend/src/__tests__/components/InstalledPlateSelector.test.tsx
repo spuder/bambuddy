@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { render } from '../utils';
@@ -59,5 +59,24 @@ describe('InstalledPlateSelector', () => {
 
     await userEvent.selectOptions(select, '1');
     await waitFor(() => expect(swapped).toHaveBeenCalledWith({ plate_id: 1 }));
+  });
+
+  it('falls back to the base type icon when a plate photo is missing', async () => {
+    server.use(
+      http.get('/api/v1/settings/', () => HttpResponse.json({ build_plate_tracking_enabled: true })),
+      http.get('/api/v1/build-plates', () =>
+        HttpResponse.json([{ ...plates[1], enabled: true, image: '/img/plates/3d_effect_starry.jpg' }]),
+      ),
+    );
+    const { container } = render(<InstalledPlateSelector printer={{ ...printer, installed_plate_id: 2 }} />);
+    await screen.findByRole('option', { name: '3D Effect – Starry' });
+    const img = await waitFor(() => {
+      const el = container.querySelector('img');
+      expect(el).not.toBeNull();
+      return el!;
+    });
+    expect(img).toHaveAttribute('src', '/img/plates/3d_effect_starry.jpg');
+    fireEvent.error(img);
+    await waitFor(() => expect(container.querySelector('img')).toHaveAttribute('src', '/img/bed/bed_pei_cool.png'));
   });
 });

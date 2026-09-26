@@ -262,13 +262,14 @@ export function PrintModal({
   // Build plate requirement (#1306). Only offered while build plate tracking is
   // on. 'type' = any plate of the file's type (the default, derived server-side),
   // 'any' = no plate constraint, or a specific build plate id.
-  const [plateChoice, setPlateChoice] = useState<'type' | 'any' | number>(() => {
+  const [initialPlateChoice] = useState<'type' | 'any' | number>(() => {
     if (mode === 'edit-queue-item' && queueItem) {
       if (queueItem.required_plate_id != null) return queueItem.required_plate_id;
       if (queueItem.required_plate_type === PLATE_TYPE_ANY) return 'any';
     }
     return 'type';
   });
+  const [plateChoice, setPlateChoice] = useState<'type' | 'any' | number>(initialPlateChoice);
 
   const [selectedCostCenterId, setSelectedCostCenterId] = useState<number | null>(() =>
     mode === 'edit-queue-item' ? queueItem?.cost_center_id ?? null : null
@@ -870,19 +871,35 @@ export function PrintModal({
   // sliced for, the plates of that type the user owns, and what to send.
   const plateTarget = selectedPlate != null ? plates.find(p => p.index === selectedPlate) : plates[0];
   const fileBaseType = normalizeBedType(plateTarget?.bed_type);
+  // The job's current plate stays listed in edit mode even if it has since
+  // been unticked, so the select never shows a value it has no option for.
+  const editingPlateId = mode === 'edit-queue-item' ? queueItem?.required_plate_id ?? null : null;
   const matchingBuildPlates = buildPlates.filter(
-    (p) => p.enabled && (fileBaseType == null || p.base_type === fileBaseType),
+    (p) => (p.enabled || p.id === editingPlateId) && (fileBaseType == null || p.base_type === fileBaseType),
   );
   const showPlatePicker = plateTracking && !isCrossModel && !isMultiPlateSelection;
+
+  // A specific plate picked for one plate of the file may not fit another:
+  // once both lists have loaded, fall back to "any plate of the file's type"
+  // rather than submit a plate the server will reject.
+  useEffect(() => {
+    if (typeof plateChoice !== 'number' || !buildPlates.length || !plates.length) return;
+    if (!matchingBuildPlates.some((p) => p.id === plateChoice)) setPlateChoice('type');
+  }, [plateChoice, buildPlates.length, plates.length, matchingBuildPlates]);
+
   const plateConstraint = (): Pick<PrintQueueItemCreate, 'required_plate_type' | 'required_plate_id'> => {
     if (!plateTracking) return {};
+    // Editing a job without touching its plate must leave the stored
+    // constraint alone, whatever this dialog could or could not read.
+    if (mode === 'edit-queue-item' && plateChoice === initialPlateChoice) return {};
     if (plateChoice === 'any') return { required_plate_type: PLATE_TYPE_ANY, required_plate_id: null };
     if (typeof plateChoice === 'number' && !isMultiPlateSelection) return { required_plate_id: plateChoice };
-    // 'type': let the server derive it on create; on edit, say so explicitly so
-    // switching back from "any" or a specific plate actually takes effect.
-    return mode === 'edit-queue-item'
-      ? { required_plate_type: fileBaseType ?? PLATE_TYPE_ANY, required_plate_id: null }
-      : {};
+    if (mode !== 'edit-queue-item') return {};  // 'type' on create: the server derives it
+    // Switched back to 'type' on edit. Only name the type when this dialog
+    // actually knows it; otherwise clear the specific plate and keep the rest.
+    return fileBaseType
+      ? { required_plate_type: fileBaseType, required_plate_id: null }
+      : { required_plate_id: null };
   };
 
   const filamentWarningMessage = useMemo(() => {

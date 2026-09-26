@@ -98,7 +98,8 @@ def plate_mismatch(
     * A printer with no plate recorded is "not tracked" and accepts anything,
       so turning the feature on never strands a printer the user has not set up.
     * A job asking for one specific plate (``required_plate_id``) needs exactly
-      that plate.
+      that plate — and, when the job also names a type, that plate must still be
+      of it (a custom plate's type can be edited after jobs asked for it).
     * Otherwise a job needs any plate of its base type — a patterned plate is a
       subset of its base type, so a Carbon Fiber plate takes Smooth PEI jobs.
     * A job with no requirement (None or PLATE_TYPE_ANY) goes anywhere.
@@ -112,6 +113,8 @@ def plate_mismatch(
     if required_plate_id is not None:
         if installed.id != required_plate_id:
             return f"needs {required_plate_name or f'plate #{required_plate_id}'}, has {installed.name}"
+        if required_type and installed.base_type != required_type:
+            return f"needs {bed_type_label(required_type)}, has {installed.name}"
         return None
     if required_type and installed.base_type != required_type:
         return f"needs {bed_type_label(required_type)}, has {installed.name}"
