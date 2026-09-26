@@ -121,4 +121,21 @@ describe('BuildPlateSettings', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Untick anyway' }));
     await waitFor(() => expect(patched).toHaveBeenCalledWith({ enabled: false }));
   });
+
+  it('says recorded plates are cleared when tracking is switched back on', async () => {
+    const onToggle = vi.fn();
+    const { rerender } = render(<BuildPlateSettings enabled={false} onToggle={onToggle} />);
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Enable build plate tracking' }));
+    expect(onToggle).toHaveBeenCalledWith(true);
+
+    rerender(<BuildPlateSettings enabled onToggle={onToggle} />);
+    expect(screen.getByText(/will be cleared when you save/)).toBeInTheDocument();
+  });
+
+  it('does not show the note when tracking was already on', async () => {
+    render(<BuildPlateSettings enabled onToggle={vi.fn()} />);
+    await screen.findByText('Smooth PEI Plate');
+    expect(screen.queryByText(/will be cleared when you save/)).not.toBeInTheDocument();
+  });
 });
+

@@ -2560,6 +2560,7 @@ export default {
       title: 'Piatti di stampa',
       enable: 'Attiva il tracciamento dei piatti',
       enableDescription: 'Registra quale piatto è montato su ogni stampante e invia i lavori in coda solo a una stampante il cui piatto corrisponde a quello per cui il file è stato elaborato. Disattivato per impostazione predefinita: i piatti vengono ignorati.',
+      reEnabledNote: 'I piatti registrati prima di disattivare il tracciamento verranno cancellati al salvataggio: imposta il piatto sulla scheda di ogni stampante.',
       ownedTitle: 'Quali piatti possiedi?',
       ownedDescription: 'Seleziona i piatti che usi. Solo i piatti selezionati possono essere scelti per una stampante o un lavoro. I piatti con motivo, come i fogli 3D Effect, contano come il loro tipo base.',
       addCustom: 'Aggiungi piatto personalizzato',

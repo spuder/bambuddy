@@ -2607,6 +2607,7 @@ export default {
       title: 'Baskı plakaları',
       enable: 'Baskı plakası takibini etkinleştir',
       enableDescription: 'Her yazıcıda hangi plakanın takılı olduğunu kaydeder ve kuyruktaki işleri yalnızca plakası dosyanın dilimlendiği plakayla eşleşen yazıcıya gönderir. Varsayılan olarak kapalıdır; kapalıyken plakalar yok sayılır.',
+      reEnabledNote: 'Takip kapatılmadan önce kaydedilen plakalar kaydettiğinizde temizlenir — her yazıcı kartında plakayı ayarlayın.',
       ownedTitle: 'Hangi plakalara sahipsiniz?',
       ownedDescription: 'Kullandığınız plakaları işaretleyin. Yalnızca işaretli plakalar bir yazıcı veya iş için seçilebilir. 3D Effect levhaları gibi desenli plakalar temel türleri olarak sayılır.',
       addCustom: 'Özel plaka ekle',

@@ -2624,6 +2624,7 @@ export default {
       title: 'Build Plates',
       enable: 'Enable build plate tracking',
       enableDescription: 'Record which build plate is on each printer and only send queued jobs to a printer whose plate matches the plate the file was sliced for. Off by default — when off, plates are ignored.',
+      reEnabledNote: 'Plates recorded before tracking was turned off will be cleared when you save — set the plate on each printer card.',
       ownedTitle: 'Which plates do you own?',
       ownedDescription: 'Tick the plates you use. Only ticked plates can be selected for a printer or a job. Patterned plates such as the 3D Effect sheets count as their base type.',
       addCustom: 'Add custom plate',

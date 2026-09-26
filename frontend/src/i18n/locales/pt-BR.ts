@@ -2560,6 +2560,7 @@ export default {
       title: 'Placas de impressão',
       enable: 'Ativar rastreamento de placas',
       enableDescription: 'Registra qual placa está em cada impressora e só envia trabalhos da fila para uma impressora cuja placa corresponda à placa usada no fatiamento. Desativado por padrão — quando desativado, as placas são ignoradas.',
+      reEnabledNote: 'As placas registradas antes de desativar o rastreamento serão apagadas ao salvar — defina a placa no cartão de cada impressora.',
       ownedTitle: 'Quais placas você tem?',
       ownedDescription: 'Marque as placas que você usa. Somente placas marcadas podem ser escolhidas para uma impressora ou trabalho. Placas com padrão, como as folhas 3D Effect, contam como seu tipo base.',
       addCustom: 'Adicionar placa personalizada',

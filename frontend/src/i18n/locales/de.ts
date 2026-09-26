@@ -2604,6 +2604,7 @@ export default {
       title: 'Druckplatten',
       enable: 'Druckplatten-Verfolgung aktivieren',
       enableDescription: 'Speichert, welche Druckplatte in jedem Drucker liegt, und sendet Warteschlangen-Aufträge nur an Drucker mit passender Platte. Standardmäßig aus — dann werden Platten ignoriert.',
+      reEnabledNote: 'Vor dem Ausschalten erfasste Platten werden beim Speichern gelöscht — lege die Platte auf jeder Druckerkarte neu fest.',
       ownedTitle: 'Welche Platten besitzt du?',
       ownedDescription: 'Hake die Platten an, die du verwendest. Nur angehakte Platten können einem Drucker oder Auftrag zugewiesen werden. Gemusterte Platten wie die 3D-Effekt-Folien zählen als ihr Basistyp.',
       addCustom: 'Eigene Platte hinzufügen',

@@ -1941,6 +1941,17 @@ class PrintScheduler:
                             # Hold this item back rather than dispatching onto a
                             # printer whose AMS has not reported yet.
                             skip_reasons["powered_on_printer"] = skip_reasons.get("powered_on_printer", 0) + 1
+                            # This skips the waiting-reason update below, so a
+                            # "Wrong plate" reason that no longer holds (the
+                            # plate was swapped, or tracking was turned off)
+                            # would outlive the pass. Replace just that one; the
+                            # rest keep their usual update and notification.
+                            fresh_reason = _collapse_waiting_reasons(per_model_reasons)
+                            if "Wrong plate:" in (item.waiting_reason or "") and "Wrong plate:" not in (
+                                fresh_reason or ""
+                            ):
+                                item.waiting_reason = fresh_reason
+                                await db.commit()
                             continue
 
                     waiting_reason = None if printer_id else _collapse_waiting_reasons(per_model_reasons)

@@ -2624,6 +2624,7 @@ export default {
       title: 'Bouwplaten',
       enable: 'Bouwplaat-tracking inschakelen',
       enableDescription: 'Houdt bij welke bouwplaat in elke printer ligt en stuurt wachtrijtaken alleen naar een printer waarvan de plaat overeenkomt met de plaat waarvoor het bestand is gesliced. Standaard uit — dan worden platen genegeerd.',
+      reEnabledNote: 'Platen die vóór het uitschakelen zijn vastgelegd, worden bij opslaan gewist — stel de plaat in op elke printerkaart.',
       ownedTitle: 'Welke platen heb je?',
       ownedDescription: 'Vink de platen aan die je gebruikt. Alleen aangevinkte platen kunnen voor een printer of taak worden gekozen. Platen met patroon, zoals de 3D Effect-folies, tellen als hun basistype.',
       addCustom: 'Eigen plaat toevoegen',

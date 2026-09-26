@@ -335,6 +335,24 @@ async def update_settings(
     }
     mqtt_updated = bool(mqtt_keys & set(update_data.keys()))
 
+    # Build plate tracking switched back on (#1306). Plates are swapped by hand
+    # while nobody is recording them, so whatever each printer had recorded
+    # when tracking went off may be wrong now. Start every printer from "not
+    # tracked" (accepts any job) rather than hold or route jobs against a stale
+    # plate; queued jobs keep their own plate requirements, which apply again as
+    # each printer's current plate is recorded.
+    if update_data.get("build_plate_tracking_enabled") is True and not setting_is_true(
+        await get_setting(db, "build_plate_tracking_enabled")
+    ):
+        from sqlalchemy import update
+
+        from backend.app.models.printer import Printer
+
+        cleared = await db.execute(
+            update(Printer).where(Printer.installed_plate_id.is_not(None)).values(installed_plate_id=None)
+        )
+        logger.info("Build plate tracking re-enabled: cleared recorded plate on %d printer(s)", cleared.rowcount or 0)
+
     for key, value in update_data.items():
         # Convert value to string for storage
         if isinstance(value, bool):

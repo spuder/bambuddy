@@ -353,3 +353,56 @@ class TestSetting:
         response = await async_client.patch("/api/v1/settings/", json={"build_plate_tracking_enabled": True})
         assert response.status_code == 200
         assert response.json()["build_plate_tracking_enabled"] is True
+
+    @pytest.mark.asyncio
+    @pytest.mark.integration
+    async def test_re_enabling_clears_recorded_plates_but_keeps_job_requirements(
+        self, async_client: AsyncClient, db_session, printer_factory, plates
+    ):
+        """Plates are swapped by hand while tracking is off, so what each printer
+        had recorded may be wrong when it comes back on."""
+        cf = plates["3d_effect_carbon_fiber"].id
+        textured = plates["textured_pei"].id
+        printer = await printer_factory(installed_plate_id=textured)
+        item = PrintQueueItem(
+            printer_id=printer.id,
+            status="pending",
+            position=1,
+            required_plate_type="smooth_pei",
+            required_plate_id=cf,
+        )
+        db_session.add(item)
+        await db_session.commit()
+        printer_id, item_id = printer.id, item.id
+
+        await async_client.patch("/api/v1/settings/", json={"build_plate_tracking_enabled": True})
+        await async_client.patch("/api/v1/settings/", json={"build_plate_tracking_enabled": False})
+        # Turned off: nothing is touched.
+        db_session.expire_all()
+        await async_client.put(f"/api/v1/printers/{printer_id}/installed-plate", json={"plate_id": textured})
+        assert (await db_session.get(Printer, printer_id)).installed_plate_id == textured
+
+        await async_client.patch("/api/v1/settings/", json={"build_plate_tracking_enabled": True})
+
+        db_session.expire_all()
+        assert (await db_session.get(Printer, printer_id)).installed_plate_id is None
+        row = await db_session.get(PrintQueueItem, item_id)
+        assert row.required_plate_id == cf
+        assert row.required_plate_type == "smooth_pei"
+
+    @pytest.mark.asyncio
+    @pytest.mark.integration
+    async def test_saving_while_already_on_keeps_recorded_plates(
+        self, async_client: AsyncClient, db_session, printer_factory, plates
+    ):
+        """The settings page re-sends every value on save; that must not wipe plates."""
+        smooth = plates["smooth_pei"].id
+        await async_client.patch("/api/v1/settings/", json={"build_plate_tracking_enabled": True})
+        printer = await printer_factory(installed_plate_id=smooth)
+        printer_id = printer.id
+
+        await async_client.patch("/api/v1/settings/", json={"build_plate_tracking_enabled": True})
+        await async_client.patch("/api/v1/settings/", json={"build_plate_tracking_enabled": False})
+
+        db_session.expire_all()
+        assert (await db_session.get(Printer, printer_id)).installed_plate_id == smooth

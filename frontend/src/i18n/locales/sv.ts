@@ -2624,6 +2624,7 @@ export default {
       title: 'Byggplattor',
       enable: 'Aktivera spårning av byggplattor',
       enableDescription: 'Registrerar vilken byggplatta som sitter i varje skrivare och skickar köade jobb bara till en skrivare vars platta matchar plattan filen slicades för. Av som standard — då ignoreras plattor.',
+      reEnabledNote: 'Plattor som registrerades innan spårningen stängdes av rensas när du sparar — ange plattan på varje skrivarkort.',
       ownedTitle: 'Vilka plattor har du?',
       ownedDescription: 'Bocka för plattorna du använder. Endast förbockade plattor kan väljas för en skrivare eller ett jobb. Mönstrade plattor, som 3D Effect-arken, räknas som sin bastyp.',
       addCustom: 'Lägg till egen platta',

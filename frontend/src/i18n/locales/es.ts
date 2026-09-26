@@ -2606,6 +2606,7 @@ export default {
       title: 'Placas de impresión',
       enable: 'Activar seguimiento de placas',
       enableDescription: 'Registra qué placa tiene cada impresora y solo envía trabajos de la cola a una impresora cuya placa coincida con la del archivo laminado. Desactivado por defecto: así se ignoran las placas.',
+      reEnabledNote: 'Las placas registradas antes de desactivar el seguimiento se borrarán al guardar: indica la placa en la tarjeta de cada impresora.',
       ownedTitle: '¿Qué placas tienes?',
       ownedDescription: 'Marca las placas que usas. Solo las placas marcadas se pueden elegir para una impresora o un trabajo. Las placas con patrón, como las láminas 3D Effect, cuentan como su tipo base.',
       addCustom: 'Añadir placa personalizada',

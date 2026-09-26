@@ -2560,6 +2560,7 @@ export default {
       title: 'Plateaux d\'impression',
       enable: 'Activer le suivi des plateaux',
       enableDescription: 'Enregistre le plateau installé sur chaque imprimante et n\'envoie les travaux de la file qu\'à une imprimante dont le plateau correspond à celui du fichier tranché. Désactivé par défaut : les plateaux sont alors ignorés.',
+      reEnabledNote: 'Les plateaux enregistrés avant la désactivation du suivi seront effacés à l\'enregistrement — indiquez le plateau sur la carte de chaque imprimante.',
       ownedTitle: 'Quels plateaux possédez-vous ?',
       ownedDescription: 'Cochez les plateaux que vous utilisez. Seuls les plateaux cochés peuvent être choisis pour une imprimante ou un travail. Les plateaux à motif, comme les feuilles 3D Effect, comptent comme leur type de base.',
       addCustom: 'Ajouter un plateau personnalisé',

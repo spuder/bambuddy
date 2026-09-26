@@ -335,6 +335,63 @@ class TestPinnedJobs:
         launched.assert_called_once()
 
 
+class TestTurningTrackingOff:
+    """Jobs held for a plate go out on the next pass once tracking is off."""
+
+    async def _set_tracking(self, ctx, on):
+        async with ctx.session_maker() as db:
+            row = (
+                await db.execute(select(Settings).where(Settings.key == "build_plate_tracking_enabled"))
+            ).scalar_one()
+            row.value = "true" if on else "false"
+            await db.commit()
+
+    @pytest.mark.asyncio
+    async def test_pinned_and_model_jobs_dispatch_and_lose_the_plate_reason(self, ctx):
+        await _enable_tracking(ctx)
+        await _install(ctx, 1, TEXTURED)
+        await _install(ctx, 2, TEXTURED)
+        pinned_id = await _add_item(ctx, printer_id=2, plate_type="smooth_pei", plate_id=CARBON, position=1)
+        model_id = await _add_item(ctx, plate_type="smooth_pei", plate_id=CARBON, position=2)
+        scheduler = PrintScheduler()
+
+        await _run(ctx, scheduler)
+        assert (await _item(ctx, pinned_id)).waiting_reason.startswith("Wrong plate:")
+        assert "Wrong plate:" in (await _item(ctx, model_id)).waiting_reason
+
+        await self._set_tracking(ctx, False)
+        launched = await _run(ctx, scheduler)
+
+        launched.assert_called_once()
+        assert sorted(launched.call_args.args[0]) == sorted([pinned_id, model_id])
+        pinned, model = await _item(ctx, pinned_id), await _item(ctx, model_id)
+        assert pinned.waiting_reason is None
+        assert model.waiting_reason is None
+        assert model.printer_id == 1
+        # The requirement itself is kept for if tracking comes back on.
+        assert pinned.required_plate_id == CARBON
+
+    @pytest.mark.asyncio
+    async def test_a_pass_that_wakes_a_printer_still_drops_the_plate_reason(self, ctx):
+        """The wake step skips the usual reason update for the pass it powers a
+        printer on; a "Wrong plate" reason that no longer holds must not survive it."""
+        item_id = await _add_item(ctx, plate_type="smooth_pei")
+        async with ctx.session_maker() as db:
+            item = await db.get(PrintQueueItem, item_id)
+            item.waiting_reason = "Wrong plate: X1C-01 (needs Smooth PEI / High Temp Plate, has Textured PEI Plate)"
+            await db.commit()
+        scheduler = PrintScheduler()
+
+        with (
+            patch.object(scheduler, "_find_idle_printer_for_model", AsyncMock(return_value=(None, "Offline: X1C-01"))),
+            patch.object(scheduler, "_wake_printer_for_model", AsyncMock(return_value=(1, 1))),
+        ):
+            launched = await _run(ctx, scheduler)
+
+        launched.assert_not_called()
+        assert (await _item(ctx, item_id)).waiting_reason == "Offline: X1C-01"
+
+
 class TestWake:
     @pytest.mark.asyncio
     async def test_does_not_power_on_a_printer_with_the_wrong_plate(self, ctx):

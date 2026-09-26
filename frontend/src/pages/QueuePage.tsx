@@ -401,17 +401,21 @@ function SortableQueueItem({
   etaNow?: number;
   t: (key: string, options?: Record<string, unknown>) => string;
 }) {
-  // Fetch printer status every 30 seconds while printing to monitor progress
-  // Specific build plate the job asked for (#1306), named on the plate badge.
-  // Shares the cached plate list; only fetched for rows that need it.
+  // Specific build plate the job asked for (#1306), named on the plate badge —
+  // only while plate tracking is on. With it off the plate is not enforced, so
+  // the badge shows the file's plate type as it always has. Both queries share
+  // the page's cached data; the plate list is only fetched for rows that need it.
+  const { data: appSettings } = useQuery({ queryKey: ['settings'], queryFn: api.getSettings });
+  const plateTracking = appSettings?.build_plate_tracking_enabled === true;
   const { data: buildPlates } = useQuery({
     queryKey: BUILD_PLATES_QUERY_KEY,
     queryFn: api.getBuildPlates,
-    enabled: item.required_plate_id != null,
+    enabled: plateTracking && item.required_plate_id != null,
   });
-  const requiredPlate = item.required_plate_id != null
+  const requiredPlate = plateTracking && item.required_plate_id != null
     ? buildPlates?.find((p) => p.id === item.required_plate_id) ?? null
     : null;
+  // Fetch printer status every 30 seconds while printing to monitor progress
   const { data: status } = useQuery({
     queryKey: ['printerStatus', item.printer_id],
     queryFn: () => api.getPrinterStatus(item.printer_id!),

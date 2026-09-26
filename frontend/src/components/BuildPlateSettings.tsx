@@ -54,6 +54,7 @@ export function BuildPlateSettings({ enabled, onToggle }: BuildPlateSettingsProp
   const [image, setImage] = useState('');
   const [toDelete, setToDelete] = useState<BuildPlate | null>(null);
   const [toUntick, setToUntick] = useState<BuildPlate | null>(null);
+  const [showResetNote, setShowResetNote] = useState(false);
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: BUILD_PLATES_QUERY_KEY });
 
@@ -110,13 +111,22 @@ export function BuildPlateSettings({ enabled, onToggle }: BuildPlateSettingsProp
             <input
               type="checkbox"
               checked={enabled}
-              onChange={(e) => onToggle(e.target.checked)}
+              onChange={(e) => {
+                // Switching back on clears every printer's recorded plate on
+                // save (they may have been swapped while untracked); say so.
+                setShowResetNote(e.target.checked && !enabled);
+                onToggle(e.target.checked);
+              }}
               className="sr-only peer"
               aria-label={t('settings.buildPlates.enable')}
             />
             <div className="w-11 h-6 bg-bambu-dark-tertiary peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-bambu-green"></div>
           </label>
         </div>
+
+        {enabled && showResetNote && (
+          <p className="text-xs text-amber-600 dark:text-amber-400">{t('settings.buildPlates.reEnabledNote')}</p>
+        )}
 
         {enabled && (
           <>
