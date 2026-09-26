@@ -385,6 +385,14 @@ async def update_printer(
 
     update_data = printer_data.model_dump(exclude_unset=True)
 
+    # Installed build plate (#1306) must name a real plate; null = not tracked.
+    if update_data.get("installed_plate_id") is not None:
+        from backend.app.models.build_plate import BuildPlate
+
+        plate_exists = await db.scalar(select(BuildPlate.id).where(BuildPlate.id == update_data["installed_plate_id"]))
+        if not plate_exists:
+            raise HTTPException(400, "Build plate not found")
+
     # Handle nested ROI object - flatten to individual columns
     if "plate_detection_roi" in update_data:
         roi = update_data.pop("plate_detection_roi")

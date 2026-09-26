@@ -77,6 +77,8 @@ class PrinterUpdate(BaseModel):
     camera_rotation: int | None = None  # 0, 90, 180, 270 degrees
     plate_detection_enabled: bool | None = None
     plate_detection_roi: PlateDetectionROI | None = None
+    # build_plates.id of the plate now on the printer; null = not tracked (#1306)
+    installed_plate_id: int | None = None
 
 
 class PrinterResponse(PrinterBase):
@@ -96,6 +98,7 @@ class PrinterResponse(PrinterBase):
     camera_rotation: int = 0  # 0, 90, 180, 270 degrees
     plate_detection_enabled: bool = False
     plate_detection_roi: PlateDetectionROI | None = None
+    installed_plate_id: int | None = None  # #1306
     created_at: datetime
     updated_at: datetime
 
@@ -123,6 +126,7 @@ class PrinterResponse(PrinterBase):
             "supports_nozzle_flow_type": supports_nozzle_flow_type(printer.model),
             "print_hours_offset": printer.print_hours_offset,
             "plate_detection_enabled": printer.plate_detection_enabled,
+            "installed_plate_id": printer.installed_plate_id,
             "created_at": printer.created_at,
             "updated_at": printer.updated_at,
         }

@@ -221,6 +221,12 @@ export default {
 
   // Printers page
   printers: {
+    buildPlate: {
+      label: 'Plateau installé',
+      swap: 'Changer le plateau installé',
+      notTracked: 'Plateau non suivi',
+      swapFailed: 'Impossible de changer le plateau',
+    },
     addPreflight: {
       checking: 'Vérification de la connexion...',
       warning: 'Certaines vérifications de connexion ont échoué. Cette imprimante pourrait apparaître hors ligne. Examinez les vérifications ci-dessous, corrigez ce que vous pouvez, ou enregistrez quand même.',
@@ -2546,6 +2552,27 @@ export default {
       keepExistingSpoolWeightDesc: 'Les bobines déjà créées avec ce type de filament conservent l\'ancien poids à vide. Les nouvelles bobines utilisent la valeur mise à jour.',
       applyToAllSpools: 'Appliquer à toutes les bobines',
       applyToAllSpoolsDesc: 'Tous les calculs de poids pour ce type de filament utilisent immédiatement le nouveau poids à vide.',
+    },
+    buildPlates: {
+      title: 'Plateaux d\'impression',
+      enable: 'Activer le suivi des plateaux',
+      enableDescription: 'Enregistre le plateau installé sur chaque imprimante et n\'envoie les travaux de la file qu\'à une imprimante dont le plateau correspond à celui du fichier tranché. Désactivé par défaut : les plateaux sont alors ignorés.',
+      ownedTitle: 'Quels plateaux possédez-vous ?',
+      ownedDescription: 'Cochez les plateaux que vous utilisez. Seuls les plateaux cochés peuvent être choisis pour une imprimante ou un travail. Les plateaux à motif, comme les feuilles 3D Effect, comptent comme leur type de base.',
+      addCustom: 'Ajouter un plateau personnalisé',
+      addTitle: 'Nouveau plateau',
+      name: 'Nom',
+      namePlaceholder: 'ex. PEI doré',
+      baseType: 'Type de plateau dans le trancheur',
+      baseTypeHint: 'Le type de plateau choisi dans le trancheur pour imprimer sur ce plateau.',
+      pattern: 'Motif (facultatif)',
+      patternPlaceholder: 'ex. Fibre de carbone',
+      image: 'URL de la photo (facultatif)',
+      add: 'Ajouter le plateau',
+      added: 'Plateau ajouté',
+      saveFailed: 'Impossible d\'enregistrer le plateau',
+      deleteTitle: 'Supprimer le plateau',
+      deleteMessage: 'Supprimer {{name}} ? Les imprimantes qui l\'utilisent ne seront plus suivies.',
     },
     colorCatalog: {
       title: 'Catalogue de Couleurs',
@@ -4983,6 +5010,13 @@ export default {
 
   // Print modal
   printModal: {
+    buildPlate: {
+      label: 'Plateau',
+      anyOfType: 'N\'importe quel {{type}}',
+      fromFile: 'Plateau du fichier',
+      any: 'N\'importe quel plateau (ignorer)',
+      hint: 'Le travail attend qu\'une imprimante ait un plateau correspondant installé.',
+    },
     variants: {
       editNote: 'Ces alternatives ont été définies lors de la mise en file. Annulez et remettez en file pour les modifier.',
       title: 'Alternatives d\'imprimante',

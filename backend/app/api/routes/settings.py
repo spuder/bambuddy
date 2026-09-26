@@ -189,6 +189,7 @@ async def _build_settings_response(db: AsyncSession, is_api_key: bool = False) -
             "user_notifications_enabled",
             "queue_drying_enabled",
             "queue_drying_block",
+            "build_plate_tracking_enabled",
             "ambient_drying_enabled",
             "print_drying_enabled",
             "require_plate_clear",

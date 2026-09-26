@@ -221,6 +221,12 @@ export default {
 
   // Printers page
   printers: {
+    buildPlate: {
+      label: 'Monterad byggplatta',
+      swap: 'Byt monterad byggplatta',
+      notTracked: 'Platta spåras inte',
+      swapFailed: 'Kunde inte byta platta',
+    },
     title: 'Skrivare',
     addPrinter: 'Lägg till skrivare',
     addPreflight: {
@@ -2610,6 +2616,27 @@ export default {
       keepExistingSpoolWeightDesc: 'Rullar som redan skapats med denna filamenttyp behåller den gamla taravikten. Nya rullar använder den uppdaterade vikten.',
       applyToAllSpools: 'Tillämpa på alla rullar',
       applyToAllSpoolsDesc: 'Alla viktberäkningar för denna filamenttyp använder omedelbart den nya taravikten.',
+    },
+    buildPlates: {
+      title: 'Byggplattor',
+      enable: 'Aktivera spårning av byggplattor',
+      enableDescription: 'Registrerar vilken byggplatta som sitter i varje skrivare och skickar köade jobb bara till en skrivare vars platta matchar plattan filen slicades för. Av som standard — då ignoreras plattor.',
+      ownedTitle: 'Vilka plattor har du?',
+      ownedDescription: 'Bocka för plattorna du använder. Endast förbockade plattor kan väljas för en skrivare eller ett jobb. Mönstrade plattor, som 3D Effect-arken, räknas som sin bastyp.',
+      addCustom: 'Lägg till egen platta',
+      addTitle: 'Ny platta',
+      name: 'Namn',
+      namePlaceholder: 't.ex. Guld-PEI',
+      baseType: 'Plattyp i slicern',
+      baseTypeHint: 'Plattypen du väljer i slicern när du skriver ut på den här plattan.',
+      pattern: 'Mönster (valfritt)',
+      patternPlaceholder: 't.ex. Kolfiber',
+      image: 'Foto-URL (valfritt)',
+      add: 'Lägg till platta',
+      added: 'Platta tillagd',
+      saveFailed: 'Kunde inte spara plattan',
+      deleteTitle: 'Ta bort platta',
+      deleteMessage: 'Ta bort {{name}}? Skrivare som använder den sätts till ej spårad.',
     },
     colorCatalog: {
       title: 'Färgkatalog',
@@ -5039,6 +5066,13 @@ errors: {
 
   // Print modal
   printModal: {
+    buildPlate: {
+      label: 'Byggplatta',
+      anyOfType: 'Valfri {{type}}',
+      fromFile: 'Platta från filen',
+      any: 'Valfri platta (ignorera)',
+      hint: 'Jobbet väntar tills en skrivare har en matchande platta monterad.',
+    },
     variants: {
       editNote: 'Dessa alternativ sattes när jobbet köades. Avbryt och köa om för att ändra dem.',
       title: 'Skrivaralternativ',

@@ -3,6 +3,7 @@ from backend.app.models.ams_label import AmsLabel
 from backend.app.models.api_key import APIKey
 from backend.app.models.archive import PrintArchive
 from backend.app.models.auth_ephemeral import AuthEphemeralToken, AuthRateLimitEvent
+from backend.app.models.build_plate import BuildPlate
 from backend.app.models.color_catalog import ColorCatalogEntry
 from backend.app.models.filament import Filament
 from backend.app.models.github_backup import GitHubBackupConfig, GitHubBackupLog
@@ -96,6 +97,7 @@ __all__ = [
     "UserOTPCode",
     "UserTOTP",
     "AuthEphemeralToken",
+    "BuildPlate",
     "AuthRateLimitEvent",
     "LongLivedToken",
 ]

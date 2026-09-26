@@ -221,6 +221,12 @@ export default {
 
   // Printers page
   printers: {
+    buildPlate: {
+      label: 'Geplaatste bouwplaat',
+      swap: 'Geplaatste bouwplaat wijzigen',
+      notTracked: 'Plaat niet bijgehouden',
+      swapFailed: 'Plaat kon niet worden gewijzigd',
+    },
     title: 'Printers',
     addPrinter: 'Printer toevoegen',
     addPreflight: {
@@ -2610,6 +2616,27 @@ export default {
       keepExistingSpoolWeightDesc: 'Spoelen die al met dit filamenttype zijn gemaakt behouden het oude taragewicht. Nieuwe spoelen gebruiken de bijgewerkte waarde.',
       applyToAllSpools: 'Toepassen op alle spoelen',
       applyToAllSpoolsDesc: 'Alle gewichtsberekeningen voor dit filamenttype gebruiken direct het nieuwe taragewicht.',
+    },
+    buildPlates: {
+      title: 'Bouwplaten',
+      enable: 'Bouwplaat-tracking inschakelen',
+      enableDescription: 'Houdt bij welke bouwplaat in elke printer ligt en stuurt wachtrijtaken alleen naar een printer waarvan de plaat overeenkomt met de plaat waarvoor het bestand is gesliced. Standaard uit — dan worden platen genegeerd.',
+      ownedTitle: 'Welke platen heb je?',
+      ownedDescription: 'Vink de platen aan die je gebruikt. Alleen aangevinkte platen kunnen voor een printer of taak worden gekozen. Platen met patroon, zoals de 3D Effect-folies, tellen als hun basistype.',
+      addCustom: 'Eigen plaat toevoegen',
+      addTitle: 'Nieuwe plaat',
+      name: 'Naam',
+      namePlaceholder: 'bijv. Goud-PEI',
+      baseType: 'Plaattype in de slicer',
+      baseTypeHint: 'Het plaattype dat je in de slicer kiest om op deze plaat te printen.',
+      pattern: 'Patroon (optioneel)',
+      patternPlaceholder: 'bijv. Koolstofvezel',
+      image: 'Foto-URL (optioneel)',
+      add: 'Plaat toevoegen',
+      added: 'Plaat toegevoegd',
+      saveFailed: 'Plaat kon niet worden opgeslagen',
+      deleteTitle: 'Plaat verwijderen',
+      deleteMessage: '{{name}} verwijderen? Printers die hem gebruiken worden op niet bijgehouden gezet.',
     },
     colorCatalog: {
       title: 'Kleurcatalogus',
@@ -5039,6 +5066,13 @@ export default {
 
   // Print modal
   printModal: {
+    buildPlate: {
+      label: 'Bouwplaat',
+      anyOfType: 'Elke {{type}}',
+      fromFile: 'Plaat uit bestand',
+      any: 'Elke plaat (negeren)',
+      hint: 'De taak wacht tot een printer een passende plaat heeft.',
+    },
     variants: {
       editNote: 'Deze alternatieven zijn ingesteld toen de taak in de wachtrij werd geplaatst. Annuleer en plaats opnieuw in de wachtrij om ze te wijzigen.',
       title: 'Printeralternatieven',

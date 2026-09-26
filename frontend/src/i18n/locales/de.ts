@@ -221,6 +221,12 @@ export default {
 
   // Printers page
   printers: {
+    buildPlate: {
+      label: 'Eingelegte Druckplatte',
+      swap: 'Eingelegte Druckplatte ändern',
+      notTracked: 'Platte nicht verfolgt',
+      swapFailed: 'Platte konnte nicht geändert werden',
+    },
     addPreflight: {
       checking: 'Verbindung wird geprüft...',
       warning: 'Einige Verbindungsprüfungen sind fehlgeschlagen. Dieser Drucker wird möglicherweise als offline angezeigt. Prüfe die Punkte unten, behebe was möglich ist, oder speichere trotzdem.',
@@ -2590,6 +2596,27 @@ export default {
       keepExistingSpoolWeightDesc: 'Bereits erstellte Spulen dieses Filamenttyps behalten das alte Leergewicht. Neue Spulen nutzen den neuen Wert.',
       applyToAllSpools: 'Auf alle Spulen anwenden',
       applyToAllSpoolsDesc: 'Alle Gewichtsberechnungen für diesen Filamenttyp nutzen sofort das neue Leergewicht.',
+    },
+    buildPlates: {
+      title: 'Druckplatten',
+      enable: 'Druckplatten-Verfolgung aktivieren',
+      enableDescription: 'Speichert, welche Druckplatte in jedem Drucker liegt, und sendet Warteschlangen-Aufträge nur an Drucker mit passender Platte. Standardmäßig aus — dann werden Platten ignoriert.',
+      ownedTitle: 'Welche Platten besitzt du?',
+      ownedDescription: 'Hake die Platten an, die du verwendest. Nur angehakte Platten können einem Drucker oder Auftrag zugewiesen werden. Gemusterte Platten wie die 3D-Effekt-Folien zählen als ihr Basistyp.',
+      addCustom: 'Eigene Platte hinzufügen',
+      addTitle: 'Neue Platte',
+      name: 'Name',
+      namePlaceholder: 'z. B. Gold-PEI',
+      baseType: 'Plattentyp im Slicer',
+      baseTypeHint: 'Der Plattentyp, den du im Slicer für diese Platte auswählst.',
+      pattern: 'Muster (optional)',
+      patternPlaceholder: 'z. B. Carbon',
+      image: 'Foto-URL (optional)',
+      add: 'Platte hinzufügen',
+      added: 'Platte hinzugefügt',
+      saveFailed: 'Platte konnte nicht gespeichert werden',
+      deleteTitle: 'Platte löschen',
+      deleteMessage: '{{name}} löschen? Drucker mit dieser Platte werden auf „nicht verfolgt“ gesetzt.',
     },
     colorCatalog: {
       title: 'Farbkatalog',
@@ -4994,6 +5021,13 @@ export default {
 
   // Print modal
   printModal: {
+    buildPlate: {
+      label: 'Druckplatte',
+      anyOfType: 'Beliebige {{type}}',
+      fromFile: 'Platte aus der Datei',
+      any: 'Beliebige Platte (ignorieren)',
+      hint: 'Der Auftrag wartet, bis ein Drucker eine passende Platte eingelegt hat.',
+    },
     variants: {
       editNote: 'Diese Alternativen wurden beim Einreihen festgelegt. Zum Ändern abbrechen und neu einreihen.',
       title: 'Drucker-Alternativen',

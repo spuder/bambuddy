@@ -147,6 +147,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { api, discoveryApi, firmwareApi, withMediaToken, ApiError } from '../api/client';
 import { formatDateOnly, formatDateTime, formatETA, formatDuration, formatDurationFromHours, parseUTCDate } from '../utils/date';
 import type { Printer, PrinterCreate, PrinterStatus, AMSUnit, DiscoveredPrinter, FirmwareUpdateInfo, FirmwareUploadStatus, LinkedSpoolInfo, SpoolAssignment, HMSError, InventorySpool, SmartPlug, PrinterDiagnosticResult } from '../api/client';
+import { InstalledPlateSelector } from '../components/InstalledPlateSelector';
 import { Card, CardContent } from '../components/Card';
 import { Button } from '../components/Button';
 import { ConfirmModal } from '../components/ConfirmModal';
@@ -3948,6 +3949,8 @@ function PrinterCard({
                     </span>
                   )}
                 </p>
+                {/* Installed build plate (#1306) — renders nothing unless tracking is on */}
+                <InstalledPlateSelector printer={printer} />
               </div>
             </div>
           </div>

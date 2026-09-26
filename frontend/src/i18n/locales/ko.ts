@@ -215,6 +215,12 @@ export default {
     deleteTransaction: '거래 삭제',
   },
   printers: {
+    buildPlate: {
+      label: '장착된 빌드 플레이트',
+      swap: '장착된 빌드 플레이트 변경',
+      notTracked: '플레이트 추적 안 함',
+      swapFailed: '플레이트를 변경할 수 없습니다',
+    },
     title: '프린터',
     addPrinter: '프린터 추가',
     editPrinter: '프린터 편집',
@@ -2460,6 +2466,27 @@ export default {
       keepExistingSpoolWeightDesc: '이 필라멘트 유형으로 이미 생성된 스풀은 이전 공 무게를 유지합니다. 새 스풀은 업데이트된 값을 사용합니다.',
       applyToAllSpools: '모든 스풀에 적용',
       applyToAllSpoolsDesc: '이 필라멘트 유형의 모든 무게 계산이 즉시 새 공 무게를 사용합니다.'
+    },
+    buildPlates: {
+      title: '빌드 플레이트',
+      enable: '빌드 플레이트 추적 사용',
+      enableDescription: '각 프린터에 장착된 플레이트를 기록하고, 파일을 슬라이스한 플레이트와 일치하는 프린터에만 대기열 작업을 보냅니다. 기본값은 꺼짐이며, 꺼져 있으면 플레이트를 무시합니다.',
+      ownedTitle: '보유한 플레이트',
+      ownedDescription: '사용하는 플레이트를 선택하세요. 선택한 플레이트만 프린터나 작업에 지정할 수 있습니다. 3D Effect 시트 같은 패턴 플레이트는 기본 유형으로 취급됩니다.',
+      addCustom: '사용자 플레이트 추가',
+      addTitle: '새 플레이트',
+      name: '이름',
+      namePlaceholder: '예: 골드 PEI',
+      baseType: '슬라이서 플레이트 유형',
+      baseTypeHint: '이 플레이트로 인쇄할 때 슬라이서에서 선택하는 플레이트 유형입니다.',
+      pattern: '패턴 (선택)',
+      patternPlaceholder: '예: 카본 파이버',
+      image: '사진 URL (선택)',
+      add: '플레이트 추가',
+      added: '플레이트를 추가했습니다',
+      saveFailed: '플레이트를 저장할 수 없습니다',
+      deleteTitle: '플레이트 삭제',
+      deleteMessage: '{{name}}을(를) 삭제할까요? 이 플레이트를 쓰는 프린터는 추적되지 않음으로 바뀝니다.',
     },
     colorCatalog: {
       title: '색상 카탈로그',
@@ -4764,6 +4791,13 @@ export default {
     emptySlotReset: '필라멘트가 할당되지 않음'
   },
   printModal: {
+    buildPlate: {
+      label: '빌드 플레이트',
+      anyOfType: '모든 {{type}}',
+      fromFile: '파일의 플레이트',
+      any: '모든 플레이트 (무시)',
+      hint: '일치하는 플레이트가 장착된 프린터가 있을 때까지 작업이 대기합니다.',
+    },
     variants: {
       editNote: '이 대안은 대기열에 추가할 때 정해집니다. 변경하려면 취소 후 다시 추가하세요.',
       title: '프린터 대안',

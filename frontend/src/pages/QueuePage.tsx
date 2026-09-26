@@ -67,6 +67,7 @@ import { api, ApiError } from '../api/client';
 import { PipelineRunsView } from './PipelineRunsPage';
 import { type TimeFormat, formatETA, formatDuration, formatRelativeTime, parseUTCDate } from '../utils/date';
 import { getBedTypeInfo } from '../utils/bedType';
+import { BUILD_PLATES_QUERY_KEY, plateImage } from '../utils/buildPlates';
 import type { PrintQueueItem, PrintQueueBulkUpdate, Permission, CalibrationMode } from '../api/client';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
@@ -400,6 +401,16 @@ function SortableQueueItem({
   t: (key: string, options?: Record<string, unknown>) => string;
 }) {
   // Fetch printer status every 30 seconds while printing to monitor progress
+  // Specific build plate the job asked for (#1306), named on the plate badge.
+  // Shares the cached plate list; only fetched for rows that need it.
+  const { data: buildPlates } = useQuery({
+    queryKey: BUILD_PLATES_QUERY_KEY,
+    queryFn: api.getBuildPlates,
+    enabled: item.required_plate_id != null,
+  });
+  const requiredPlate = item.required_plate_id != null
+    ? buildPlates?.find((p) => p.id === item.required_plate_id) ?? null
+    : null;
   const { data: status } = useQuery({
     queryKey: ['printerStatus', item.printer_id],
     queryFn: () => api.getPrinterStatus(item.printer_id!),
@@ -659,10 +670,14 @@ function SortableQueueItem({
               // carry curr_bed_type or the slicer used an unknown label.
               const bed = getBedTypeInfo(item.bed_type);
               if (!bed) return null;
+              // A job that asked for one specific plate (e.g. a 3D Effect
+              // sheet) names that plate instead of the generic type (#1306).
+              const label = requiredPlate ? requiredPlate.name : bed.label;
+              const icon = requiredPlate ? plateImage(requiredPlate) ?? bed.icon : bed.icon;
               return (
-                <span className="flex items-center gap-1 sm:gap-1.5" title={bed.label}>
-                  <img src={bed.icon} alt="" className="w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain" />
-                  <span className="truncate max-w-[120px]">{bed.label}</span>
+                <span className="flex items-center gap-1 sm:gap-1.5" title={label}>
+                  <img src={icon} alt="" className="w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain" />
+                  <span className="truncate max-w-[120px]">{label}</span>
                 </span>
               );
             })()}

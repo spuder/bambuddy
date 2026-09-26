@@ -221,6 +221,12 @@ export default {
 
   // Printers page
   printers: {
+    buildPlate: {
+      label: 'Placa instalada',
+      swap: 'Trocar a placa instalada',
+      notTracked: 'Placa não rastreada',
+      swapFailed: 'Não foi possível trocar a placa',
+    },
     addPreflight: {
       checking: 'Verificando a conexão...',
       warning: 'Algumas verificações de conexão falharam. Esta impressora pode aparecer como offline. Revise as verificações abaixo, corrija o que puder ou salve mesmo assim.',
@@ -2546,6 +2552,27 @@ export default {
       keepExistingSpoolWeightDesc: 'Os carretéis já criados com este tipo de filamento mantêm o peso tara antigo. Novos carretéis usam o valor atualizado.',
       applyToAllSpools: 'Aplicar a todos os carretéis',
       applyToAllSpoolsDesc: 'Todos os cálculos de peso para este tipo de filamento usam imediatamente o novo peso tara.',
+    },
+    buildPlates: {
+      title: 'Placas de impressão',
+      enable: 'Ativar rastreamento de placas',
+      enableDescription: 'Registra qual placa está em cada impressora e só envia trabalhos da fila para uma impressora cuja placa corresponda à placa usada no fatiamento. Desativado por padrão — quando desativado, as placas são ignoradas.',
+      ownedTitle: 'Quais placas você tem?',
+      ownedDescription: 'Marque as placas que você usa. Somente placas marcadas podem ser escolhidas para uma impressora ou trabalho. Placas com padrão, como as folhas 3D Effect, contam como seu tipo base.',
+      addCustom: 'Adicionar placa personalizada',
+      addTitle: 'Nova placa',
+      name: 'Nome',
+      namePlaceholder: 'ex.: PEI dourada',
+      baseType: 'Tipo de placa no fatiador',
+      baseTypeHint: 'O tipo de placa que você seleciona no fatiador para imprimir nesta placa.',
+      pattern: 'Padrão (opcional)',
+      patternPlaceholder: 'ex.: Fibra de carbono',
+      image: 'URL da foto (opcional)',
+      add: 'Adicionar placa',
+      added: 'Placa adicionada',
+      saveFailed: 'Não foi possível salvar a placa',
+      deleteTitle: 'Excluir placa',
+      deleteMessage: 'Excluir {{name}}? As impressoras que a usam ficarão sem rastreamento.',
     },
     colorCatalog: {
       title: 'Catálogo de Cores',
@@ -4982,6 +5009,13 @@ export default {
 
   // Print modal
   printModal: {
+    buildPlate: {
+      label: 'Placa de impressão',
+      anyOfType: 'Qualquer {{type}}',
+      fromFile: 'Placa do arquivo',
+      any: 'Qualquer placa (ignorar)',
+      hint: 'O trabalho aguarda até que uma impressora tenha uma placa compatível instalada.',
+    },
     variants: {
       editNote: 'Estas alternativas foram definidas ao enfileirar o trabalho. Cancele e enfileire de novo para alterá-las.',
       title: 'Alternativas de impressora',

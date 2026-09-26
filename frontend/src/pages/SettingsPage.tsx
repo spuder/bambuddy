@@ -42,6 +42,7 @@ import { LdapUserPicker } from '../components/LdapUserPicker';
 import { SpoolmanSettings } from '../components/SpoolmanSettings';
 import { SpoolCatalogSettings } from '../components/SpoolCatalogSettings';
 import { ColorCatalogSettings } from '../components/ColorCatalogSettings';
+import { BuildPlateSettings } from '../components/BuildPlateSettings';
 import { ExternalLinksSettings } from '../components/ExternalLinksSettings';
 import { VirtualPrinterList } from '../components/VirtualPrinterList';
 import { SpoolBuddySettings } from '../components/SpoolBuddySettings';
@@ -91,6 +92,7 @@ registerSettingsSearch({ labelKey: 'settings.concurrentUploadsTitle', labelFallb
 registerSettingsSearch({ labelKey: 'settings.gcodeInjection', labelFallback: 'G-code Injection', tab: 'queue', keywords: 'gcode injection start end autoprint farmloop swapmod autoclear printflow', anchor: 'card-gcode' });
 registerSettingsSearch({ labelKey: 'settings.slicerCard', labelFallback: 'Slicer', tab: 'queue', keywords: 'slicer orcaslicer bambustudio orca bambu api sidecar url docker preferred', anchor: 'card-slicer' });
 registerSettingsSearch({ labelKey: 'settings.queueDrying', tab: 'queue', keywords: 'drying presets temperature time humidity ams', anchor: 'card-drying' });
+registerSettingsSearch({ labelKey: 'settings.buildPlates.title', labelFallback: 'Build Plates', tab: 'queue', keywords: 'build plate bed textured smooth pei cool engineering supertack 3d effect carbon fiber starry diamond galaxy swap', anchor: 'card-build-plates' });
 registerSettingsSearch({ labelKey: 'settings.filamentChecks', tab: 'filament', keywords: 'filament check warning runout remaining', anchor: 'card-filamentchecks' });
 registerSettingsSearch({ labelKey: 'settings.printModal', tab: 'filament', keywords: 'print modal custom mapping', anchor: 'card-printmodal' });
 registerSettingsSearch({ labelKey: 'settings.amsDisplayThresholds', tab: 'filament', keywords: 'ams humidity temperature threshold history retention', anchor: 'card-amsthresholds' });
@@ -1157,6 +1159,7 @@ export function SettingsPage() {
       baseline.prefer_lowest_filament !== localSettings.prefer_lowest_filament ||
       (baseline.queue_drying_enabled ?? false) !== (localSettings.queue_drying_enabled ?? false) ||
       (baseline.queue_drying_block ?? false) !== (localSettings.queue_drying_block ?? false) ||
+      (baseline.build_plate_tracking_enabled ?? false) !== (localSettings.build_plate_tracking_enabled ?? false) ||
       (baseline.ambient_drying_enabled ?? false) !== (localSettings.ambient_drying_enabled ?? false) ||
       (baseline.print_drying_enabled ?? false) !== (localSettings.print_drying_enabled ?? false) ||
       (baseline.drying_presets ?? '') !== (localSettings.drying_presets ?? '') ||
@@ -1269,6 +1272,7 @@ export function SettingsPage() {
         prefer_lowest_filament: localSettings.prefer_lowest_filament,
         queue_drying_enabled: localSettings.queue_drying_enabled,
         queue_drying_block: localSettings.queue_drying_block,
+        build_plate_tracking_enabled: localSettings.build_plate_tracking_enabled,
         ambient_drying_enabled: localSettings.ambient_drying_enabled,
         print_drying_enabled: localSettings.print_drying_enabled,
         drying_presets: localSettings.drying_presets,
@@ -5541,6 +5545,12 @@ export function SettingsPage() {
               )}
             </CardContent>
           </Card>
+
+          {/* Build plate tracking (#1306) */}
+          <BuildPlateSettings
+            enabled={localSettings.build_plate_tracking_enabled ?? false}
+            onToggle={(value) => updateSetting('build_plate_tracking_enabled', value)}
+          />
 
           {/* Auto-Drying */}
           <Card>

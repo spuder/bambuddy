@@ -220,6 +220,12 @@ export default {
   },
   // Printers page
   printers: {
+    buildPlate: {
+      label: '装着中のビルドプレート',
+      swap: '装着中のビルドプレートを変更',
+      notTracked: 'プレート未管理',
+      swapFailed: 'プレートを変更できませんでした',
+    },
     addPreflight: {
       checking: '接続を確認しています...',
       warning: '一部の接続チェックに失敗しました。このプリンターはオフラインと表示される可能性があります。下のチェックを確認し、可能な範囲で修正するか、そのまま保存してください。',
@@ -2589,6 +2595,27 @@ export default {
       keepExistingSpoolWeightDesc: 'このフィラメントタイプで既に作成されたスプールは旧風袋重量を保持します。新しいスプールは更新後の値を使用します。',
       applyToAllSpools: '全スプールに適用',
       applyToAllSpoolsDesc: 'このフィラメントタイプの全重量計算に新しい風袋重量が即座に適用されます。',
+    },
+    buildPlates: {
+      title: 'ビルドプレート',
+      enable: 'ビルドプレートの管理を有効にする',
+      enableDescription: '各プリンターに装着中のプレートを記録し、スライス時のプレートと一致するプリンターにのみキューのジョブを送ります。既定ではオフで、オフの間はプレートを無視します。',
+      ownedTitle: '所有しているプレート',
+      ownedDescription: '使用するプレートにチェックを入れてください。チェックしたプレートだけをプリンターやジョブに選択できます。3D Effect シートなど柄付きのプレートは基本タイプとして扱われます。',
+      addCustom: 'カスタムプレートを追加',
+      addTitle: '新しいプレート',
+      name: '名前',
+      namePlaceholder: '例: ゴールド PEI',
+      baseType: 'スライサーのプレートタイプ',
+      baseTypeHint: 'このプレートで印刷するときにスライサーで選ぶプレートタイプです。',
+      pattern: '柄（任意）',
+      patternPlaceholder: '例: カーボンファイバー',
+      image: '写真の URL（任意）',
+      add: 'プレートを追加',
+      added: 'プレートを追加しました',
+      saveFailed: 'プレートを保存できませんでした',
+      deleteTitle: 'プレートを削除',
+      deleteMessage: '{{name}} を削除しますか？このプレートを使っているプリンターは未管理になります。',
     },
     colorCatalog: {
       title: 'カラーカタログ',
@@ -4994,6 +5021,13 @@ export default {
 
   // Print modal
   printModal: {
+    buildPlate: {
+      label: 'ビルドプレート',
+      anyOfType: '任意の {{type}}',
+      fromFile: 'ファイルのプレート',
+      any: '任意のプレート（無視）',
+      hint: '一致するプレートを装着したプリンターが見つかるまでジョブは待機します。',
+    },
     variants: {
       editNote: 'これらの候補はキュー追加時に決まります。変更するにはキャンセルして追加し直してください。',
       title: 'プリンターの候補',
