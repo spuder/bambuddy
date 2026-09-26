@@ -226,6 +226,9 @@ export default {
       swap: 'Cambiar la placa instalada',
       notTracked: 'Placa sin seguimiento',
       swapFailed: 'No se pudo cambiar la placa',
+      confirmMidPrintTitle: 'Hay una impresión en curso',
+      confirmMidPrintMessage: '{{name}} está imprimiendo. Cambia la placa solo cuando la hayas cambiado de verdad: la cola enviará el siguiente trabajo para la nueva placa en cuanto termine esta impresión.',
+      confirmMidPrintConfirm: 'Cambiar placa',
     },
     addPreflight: {
       checking: 'Comprobando la conexión...',
@@ -2618,7 +2621,10 @@ export default {
       added: 'Placa añadida',
       saveFailed: 'No se pudo guardar la placa',
       deleteTitle: 'Eliminar placa',
-      deleteMessage: '¿Eliminar {{name}}? Las impresoras que la usan quedarán sin seguimiento.',
+      deleteMessage: '¿Eliminar {{name}}? Las impresoras que la usan quedarán sin seguimiento y los trabajos que la pidieron aceptarán cualquier placa del mismo tipo.',
+      untickTitle: 'Placa en uso',
+      untickMessage: '{{name}} está instalada en {{printers}} impresora(s) y {{jobs}} trabajo(s) de la cola la esperan. Desmarcarla la oculta para trabajos nuevos; esos trabajos seguirán esperándola.',
+      untickConfirm: 'Desmarcar igualmente',
     },
     colorCatalog: {
       title: 'Catálogo de colores',

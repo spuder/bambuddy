@@ -15,17 +15,17 @@ const plates = [
   {
     id: 1, builtin_key: 'smooth_pei', is_builtin: true, name: 'Smooth PEI Plate', base_type: 'smooth_pei',
     base_type_label: 'Smooth PEI / High Temp Plate', pattern: null, image: '/img/bed/bed_pei_cool.png',
-    notes: null, enabled: true, sort_order: 50, installed_on: [],
+    notes: null, enabled: true, sort_order: 50, installed_on: [], required_by_pending: 0,
   },
   {
     id: 2, builtin_key: '3d_effect_carbon_fiber', is_builtin: true, name: '3D Effect – Carbon Fiber',
     base_type: 'smooth_pei', base_type_label: 'Smooth PEI / High Temp Plate', pattern: 'Carbon Fiber',
-    image: '/img/plates/3d_effect_carbon_fiber.jpg', notes: null, enabled: false, sort_order: 100, installed_on: [],
+    image: '/img/plates/3d_effect_carbon_fiber.jpg', notes: null, enabled: false, sort_order: 100, installed_on: [], required_by_pending: 0,
   },
   {
     id: 3, builtin_key: null, is_builtin: false, name: 'Gold PEI', base_type: 'smooth_pei',
     base_type_label: 'Smooth PEI / High Temp Plate', pattern: 'Gold', image: null,
-    notes: null, enabled: true, sort_order: 200, installed_on: [],
+    notes: null, enabled: true, sort_order: 200, installed_on: [], required_by_pending: 0,
   },
 ];
 
@@ -97,5 +97,28 @@ describe('BuildPlateSettings', () => {
     await waitFor(() =>
       expect(created).toHaveBeenCalledWith(expect.objectContaining({ name: 'Galaxy PEY', base_type: 'smooth_pei' })),
     );
+  });
+
+  it('asks before unticking a plate that queued jobs are waiting for', async () => {
+    const patched = vi.fn();
+    server.use(
+      http.get('/api/v1/build-plates', () =>
+        HttpResponse.json([{ ...plates[0], installed_on: [4], required_by_pending: 2 }]),
+      ),
+      http.patch('/api/v1/build-plates/1', async ({ request }) => {
+        patched(await request.json());
+        return HttpResponse.json({ ...plates[0], enabled: false });
+      }),
+    );
+    render(<BuildPlateSettings enabled onToggle={vi.fn()} />);
+    const card = (await screen.findByText('Smooth PEI Plate')).closest('label')!;
+    await userEvent.click(card.querySelector('input[type="checkbox"]')!);
+
+    expect(await screen.findByText('Plate in use')).toBeInTheDocument();
+    expect(screen.getByText(/2 queued job/)).toBeInTheDocument();
+    expect(patched).not.toHaveBeenCalled();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Untick anyway' }));
+    await waitFor(() => expect(patched).toHaveBeenCalledWith({ enabled: false }));
   });
 });

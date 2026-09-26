@@ -226,6 +226,9 @@ export default {
       swap: '更换已安装的打印板',
       notTracked: '未跟踪打印板',
       swapFailed: '无法更换打印板',
+      confirmMidPrintTitle: '正在打印',
+      confirmMidPrintMessage: '{{name}} 正在打印。请在实际更换打印板后再修改——本次打印一结束，队列就会为新打印板发送下一个任务。',
+      confirmMidPrintConfirm: '更换打印板',
     },
     addPreflight: {
       checking: '正在检查连接...',
@@ -2617,7 +2620,10 @@ export default {
       added: '已添加打印板',
       saveFailed: '无法保存打印板',
       deleteTitle: '删除打印板',
-      deleteMessage: '删除 {{name}}？使用它的打印机将变为未跟踪。',
+      deleteMessage: '删除 {{name}}？使用它的打印机将变为未跟踪，指定它的任务将接受同类型的任意打印板。',
+      untickTitle: '打印板正在使用',
+      untickMessage: '{{name}} 安装在 {{printers}} 台打印机上，队列中有 {{jobs}} 个任务在等待它。取消勾选后新任务将无法选择它，但这些任务会继续等待。',
+      untickConfirm: '仍然取消勾选',
     },
     colorCatalog: {
       title: '颜色目录',

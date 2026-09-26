@@ -226,6 +226,9 @@ export default {
       swap: 'Trocar a placa instalada',
       notTracked: 'Placa não rastreada',
       swapFailed: 'Não foi possível trocar a placa',
+      confirmMidPrintTitle: 'Há uma impressão em andamento',
+      confirmMidPrintMessage: '{{name}} está imprimindo. Só troque a placa depois de trocá-la de fato — a fila enviará o próximo trabalho para a nova placa assim que esta impressão terminar.',
+      confirmMidPrintConfirm: 'Trocar placa',
     },
     addPreflight: {
       checking: 'Verificando a conexão...',
@@ -2572,7 +2575,10 @@ export default {
       added: 'Placa adicionada',
       saveFailed: 'Não foi possível salvar a placa',
       deleteTitle: 'Excluir placa',
-      deleteMessage: 'Excluir {{name}}? As impressoras que a usam ficarão sem rastreamento.',
+      deleteMessage: 'Excluir {{name}}? As impressoras que a usam ficarão sem rastreamento, e os trabalhos que a pediram aceitarão qualquer placa do mesmo tipo.',
+      untickTitle: 'Placa em uso',
+      untickMessage: '{{name}} está instalada em {{printers}} impressora(s) e {{jobs}} trabalho(s) na fila aguardam por ela. Desmarcar a oculta para novos trabalhos; esses trabalhos continuarão aguardando.',
+      untickConfirm: 'Desmarcar mesmo assim',
     },
     colorCatalog: {
       title: 'Catálogo de Cores',

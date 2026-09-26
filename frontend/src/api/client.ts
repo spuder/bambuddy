@@ -422,6 +422,7 @@ export interface BuildPlate {
   enabled: boolean;
   sort_order: number;
   installed_on: number[];  // printer ids with this plate installed
+  required_by_pending: number;  // pending queue jobs waiting for this specific plate
 }
 
 export interface BuildPlateInput {

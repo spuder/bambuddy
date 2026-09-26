@@ -226,6 +226,9 @@ export default {
       swap: '更換已安裝的列印板',
       notTracked: '未追蹤列印板',
       swapFailed: '無法更換列印板',
+      confirmMidPrintTitle: '正在列印',
+      confirmMidPrintMessage: '{{name}} 正在列印。請在實際更換列印板後再修改——本次列印一結束，佇列就會為新列印板傳送下一個工作。',
+      confirmMidPrintConfirm: '更換列印板',
     },
     addPreflight: {
       checking: '正在檢查連線...',
@@ -2617,7 +2620,10 @@ export default {
       added: '已新增列印板',
       saveFailed: '無法儲存列印板',
       deleteTitle: '刪除列印板',
-      deleteMessage: '刪除 {{name}}？使用它的印表機將變為未追蹤。',
+      deleteMessage: '刪除 {{name}}？使用它的印表機將變為未追蹤，指定它的工作將接受同類型的任意列印板。',
+      untickTitle: '列印板正在使用',
+      untickMessage: '{{name}} 安裝在 {{printers}} 台印表機上，佇列中有 {{jobs}} 個工作在等待它。取消勾選後新工作將無法選擇它，但這些工作會繼續等待。',
+      untickConfirm: '仍然取消勾選',
     },
     colorCatalog: {
       title: '顏色目錄',

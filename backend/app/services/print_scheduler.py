@@ -2513,6 +2513,70 @@ class PrintScheduler:
                 installed[printer_id] = InstalledPlate(id=plate.id, name=plate.name, base_type=plate.base_type)
         return installed, {pid: p.name for pid, p in plates.items()}
 
+    async def _late_plate_mismatch(self, db: AsyncSession, item: PrintQueueItem) -> str | None:
+        """Why the plate now on *item*'s printer cannot take it, or None (#1306).
+
+        The dispatch-time twin of the selection-time check in check_queue: reads
+        the printer's installed plate fresh from the database, so a swap made
+        after the item was selected is seen. None whenever tracking is off, the
+        printer is untracked, or the item has no plate constraint.
+        """
+        if item.printer_id is None or not await self._get_bool_setting(db, "build_plate_tracking_enabled"):
+            return None
+        from backend.app.models.build_plate import BuildPlate
+
+        installed_id = await db.scalar(select(Printer.installed_plate_id).where(Printer.id == item.printer_id))
+        if installed_id is None:
+            return None
+        plate = await db.get(BuildPlate, installed_id)
+        if plate is None:
+            return None
+        required_id = item.required_plate_id
+        required_name = None
+        if required_id is not None:
+            required = await db.get(BuildPlate, required_id)
+            if required is None:
+                required_id = None  # deleted: fall back to the type, as check_queue does
+            else:
+                required_name = required.name
+        return plate_mismatch(
+            InstalledPlate(id=plate.id, name=plate.name, base_type=plate.base_type),
+            item.required_plate_type,
+            required_id,
+            required_name,
+        )
+
+    async def _defer_on_wrong_plate(self, db: AsyncSession, item: PrintQueueItem) -> bool:
+        """Hand *item* back to the queue if its printer's plate no longer fits.
+
+        Returns True when the dispatch must stop. The item stays pending — a
+        swap can be undone — with a waiting reason that names the swap needed.
+        A model-based item also gives its printer back, so the next pass can
+        match it to any printer of the model rather than wait on this one.
+        `_dispatch_one` releases the claim and unwinds preheat on return.
+        """
+        problem = await self._late_plate_mismatch(db, item)
+        if problem is None:
+            return False
+        printer = await db.get(Printer, item.printer_id)
+        label = (printer.name if printer else None) or f"printer {item.printer_id}"
+        logger.info(
+            "Queue item %s: build plate on printer %s changed after selection (%s) — "
+            "deferring dispatch, leaving item pending (#1306)",
+            item.id,
+            item.printer_id,
+            problem,
+        )
+        item.waiting_reason = f"Wrong plate: {label} ({problem})"
+        # target_model is set for model-based items and for cross-model items
+        # once a variant is resolved; pinned items never have one. (Not
+        # item.variants: the relationship is not loaded here and a lazy load
+        # raises on an async session.)
+        if item.target_model:
+            item.printer_id = None
+        await db.commit()
+        return True
+
     async def _wakeable_printer_ids(self, db: AsyncSession) -> set[int]:
         """Printer IDs that at least one enabled ``auto_on`` plug can power on.
 
@@ -6494,6 +6558,13 @@ class PrintScheduler:
             )
             return
 
+        # Build plate re-check (#1306). The plate was matched when this item was
+        # selected, but preheat and the upload can take minutes and the user can
+        # swap the plate on the printer card in that window. Checked here, before
+        # the upload, and again right before the print command below.
+        if await self._defer_on_wrong_plate(db, item):
+            return
+
         # Determine source: archive or library file
         archive = None
         library_file = None
@@ -6973,6 +7044,26 @@ class PrintScheduler:
         # — printer obeys, user sees "I pressed cancel and the print started".
         # rowcount==0 means the user won the race; bail out, best-effort delete
         # the file we just uploaded, do NOT send start_print.
+        # Last build plate check (#1306) before the command that makes the
+        # printer heat and print — see the first check above. The file is already
+        # on the printer, so remove it, as the cancelled-mid-dispatch path does.
+        if await self._defer_on_wrong_plate(db, item):
+            try:
+                await delete_file_async(
+                    printer.ip_address,
+                    printer.access_code,
+                    remote_path,
+                    socket_timeout=ftp_timeout,
+                    printer_model=printer.model,
+                )
+            except Exception as cleanup_err:
+                logger.debug(
+                    "Queue item %s: best-effort cleanup of uploaded file failed: %s",
+                    item.id,
+                    cleanup_err,
+                )
+            return
+
         now_utc = datetime.now(timezone.utc)
         billing_run_id = str(uuid.uuid4())
         cas = await db.execute(

@@ -226,6 +226,9 @@ export default {
       swap: 'Changer le plateau installé',
       notTracked: 'Plateau non suivi',
       swapFailed: 'Impossible de changer le plateau',
+      confirmMidPrintTitle: 'Une impression est en cours',
+      confirmMidPrintMessage: '{{name}} imprime. Ne changez le plateau qu\'une fois réellement remplacé : la file enverra le travail suivant pour le nouveau plateau dès la fin de cette impression.',
+      confirmMidPrintConfirm: 'Changer de plateau',
     },
     addPreflight: {
       checking: 'Vérification de la connexion...',
@@ -2572,7 +2575,10 @@ export default {
       added: 'Plateau ajouté',
       saveFailed: 'Impossible d\'enregistrer le plateau',
       deleteTitle: 'Supprimer le plateau',
-      deleteMessage: 'Supprimer {{name}} ? Les imprimantes qui l\'utilisent ne seront plus suivies.',
+      deleteMessage: 'Supprimer {{name}} ? Les imprimantes qui l\'utilisent ne seront plus suivies, et les travaux qui l\'ont demandé accepteront n\'importe quel plateau du même type.',
+      untickTitle: 'Plateau utilisé',
+      untickMessage: '{{name}} est installé sur {{printers}} imprimante(s) et {{jobs}} travail/travaux en file l\'attendent. Le décocher le masque pour les nouveaux travaux ; ces travaux continueront de l\'attendre.',
+      untickConfirm: 'Décocher quand même',
     },
     colorCatalog: {
       title: 'Catalogue de Couleurs',

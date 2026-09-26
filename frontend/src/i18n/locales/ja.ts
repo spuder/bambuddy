@@ -225,6 +225,9 @@ export default {
       swap: '装着中のビルドプレートを変更',
       notTracked: 'プレート未管理',
       swapFailed: 'プレートを変更できませんでした',
+      confirmMidPrintTitle: '印刷中です',
+      confirmMidPrintMessage: '{{name}} は印刷中です。実際にプレートを交換してから変更してください。この印刷が終わるとすぐに、キューは新しいプレート向けの次のジョブを送信します。',
+      confirmMidPrintConfirm: 'プレートを変更',
     },
     addPreflight: {
       checking: '接続を確認しています...',
@@ -2615,7 +2618,10 @@ export default {
       added: 'プレートを追加しました',
       saveFailed: 'プレートを保存できませんでした',
       deleteTitle: 'プレートを削除',
-      deleteMessage: '{{name}} を削除しますか？このプレートを使っているプリンターは未管理になります。',
+      deleteMessage: '{{name}} を削除しますか？このプレートを使っているプリンターは未管理になり、このプレートを指定したジョブは同じタイプの任意のプレートを受け入れます。',
+      untickTitle: '使用中のプレート',
+      untickMessage: '{{name}} は {{printers}} 台のプリンターに装着されており、キューの {{jobs}} 件のジョブがこのプレートを待っています。チェックを外すと新しいジョブでは選べなくなりますが、それらのジョブは待ち続けます。',
+      untickConfirm: 'チェックを外す',
     },
     colorCatalog: {
       title: 'カラーカタログ',

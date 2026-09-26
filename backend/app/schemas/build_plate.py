@@ -81,6 +81,8 @@ class BuildPlateResponse(BaseModel):
     sort_order: int
     # Printers that currently have this plate installed.
     installed_on: list[int] = []
+    # Pending queue jobs waiting for this specific plate.
+    required_by_pending: int = 0
     created_at: datetime | None = None
     updated_at: datetime | None = None
 

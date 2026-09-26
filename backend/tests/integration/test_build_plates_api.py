@@ -110,17 +110,73 @@ class TestBuildPlateCatalog:
         await db_session.commit()
         printer = await printer_factory(installed_plate_id=plate.id)
         item = PrintQueueItem(printer_id=printer.id, status="pending", position=1, required_plate_id=plate.id)
-        db_session.add(item)
+        done = PrintQueueItem(printer_id=printer.id, status="completed", position=2, required_plate_id=plate.id)
+        db_session.add_all([item, done])
         await db_session.commit()
 
-        printer_id, item_id = printer.id, item.id
+        printer_id, item_id, done_id, plate_id = printer.id, item.id, done.id, plate.id
 
-        response = await async_client.delete(f"/api/v1/build-plates/{plate.id}")
+        response = await async_client.delete(f"/api/v1/build-plates/{plate_id}")
 
         assert response.status_code == 204
         db_session.expire_all()
         assert (await db_session.get(Printer, printer_id)).installed_plate_id is None
         assert (await db_session.get(PrintQueueItem, item_id)).required_plate_id is None
+        # A job that already ran on the plate keeps it as history.
+        assert (await db_session.get(PrintQueueItem, done_id)).required_plate_id == plate_id
+
+    @pytest.mark.asyncio
+    @pytest.mark.integration
+    async def test_retyping_a_plate_releases_pending_jobs_that_asked_for_it(
+        self, async_client: AsyncClient, db_session, printer_factory
+    ):
+        """Jobs asked for this plate for a file of its old type; they would wait forever."""
+        plate = BuildPlate(name="Gold PEI", base_type="smooth_pei")
+        db_session.add(plate)
+        await db_session.commit()
+        printer = await printer_factory()
+        item = PrintQueueItem(
+            printer_id=printer.id,
+            status="pending",
+            position=1,
+            required_plate_type="smooth_pei",
+            required_plate_id=plate.id,
+        )
+        db_session.add(item)
+        await db_session.commit()
+        item_id, plate_id = item.id, plate.id
+
+        listed = await async_client.get("/api/v1/build-plates")
+        assert next(p for p in listed.json() if p["id"] == plate_id)["required_by_pending"] == 1
+
+        response = await async_client.patch(f"/api/v1/build-plates/{plate_id}", json={"base_type": "textured_pei"})
+
+        assert response.status_code == 200
+        assert response.json()["required_by_pending"] == 0
+        db_session.expire_all()
+        row = await db_session.get(PrintQueueItem, item_id)
+        assert row.required_plate_id is None
+        assert row.required_plate_type == "smooth_pei"
+
+    @pytest.mark.asyncio
+    @pytest.mark.integration
+    async def test_renaming_or_unticking_keeps_pending_requests(
+        self, async_client: AsyncClient, db_session, printer_factory
+    ):
+        plate = BuildPlate(name="Gold PEI", base_type="smooth_pei")
+        db_session.add(plate)
+        await db_session.commit()
+        printer = await printer_factory()
+        db_session.add(PrintQueueItem(printer_id=printer.id, status="pending", position=1, required_plate_id=plate.id))
+        await db_session.commit()
+        plate_id = plate.id
+
+        response = await async_client.patch(
+            f"/api/v1/build-plates/{plate_id}", json={"name": "Gold", "enabled": False, "base_type": "smooth_pei"}
+        )
+
+        assert response.status_code == 200
+        assert response.json()["required_by_pending"] == 1
 
 
 class TestInstalledPlate:

@@ -226,6 +226,9 @@ export default {
       swap: 'Eingelegte Druckplatte ändern',
       notTracked: 'Platte nicht verfolgt',
       swapFailed: 'Platte konnte nicht geändert werden',
+      confirmMidPrintTitle: 'Ein Druck läuft',
+      confirmMidPrintMessage: '{{name}} druckt gerade. Ändere die Platte erst, wenn sie wirklich getauscht wurde — die Warteschlange sendet den nächsten Auftrag für die neue Platte, sobald dieser Druck endet.',
+      confirmMidPrintConfirm: 'Platte ändern',
     },
     addPreflight: {
       checking: 'Verbindung wird geprüft...',
@@ -2616,7 +2619,10 @@ export default {
       added: 'Platte hinzugefügt',
       saveFailed: 'Platte konnte nicht gespeichert werden',
       deleteTitle: 'Platte löschen',
-      deleteMessage: '{{name}} löschen? Drucker mit dieser Platte werden auf „nicht verfolgt“ gesetzt.',
+      deleteMessage: '{{name}} löschen? Drucker mit dieser Platte werden auf „nicht verfolgt“ gesetzt, und Aufträge, die sie angefordert haben, akzeptieren jede Platte desselben Typs.',
+      untickTitle: 'Platte in Verwendung',
+      untickMessage: '{{name}} liegt in {{printers}} Drucker(n) und {{jobs}} Auftrag/Aufträge in der Warteschlange warten darauf. Abwählen blendet sie für neue Aufträge aus; diese Aufträge warten weiter darauf.',
+      untickConfirm: 'Trotzdem abwählen',
     },
     colorCatalog: {
       title: 'Farbkatalog',

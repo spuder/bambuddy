@@ -226,6 +226,9 @@ export default {
       swap: 'Cambia il piatto montato',
       notTracked: 'Piatto non tracciato',
       swapFailed: 'Impossibile cambiare il piatto',
+      confirmMidPrintTitle: 'Stampa in corso',
+      confirmMidPrintMessage: '{{name}} sta stampando. Cambia il piatto solo dopo averlo sostituito davvero: la coda invierà il lavoro successivo per il nuovo piatto appena termina questa stampa.',
+      confirmMidPrintConfirm: 'Cambia piatto',
     },
     addPreflight: {
       checking: 'Verifica della connessione...',
@@ -2572,7 +2575,10 @@ export default {
       added: 'Piatto aggiunto',
       saveFailed: 'Impossibile salvare il piatto',
       deleteTitle: 'Elimina piatto',
-      deleteMessage: 'Eliminare {{name}}? Le stampanti che lo usano non saranno più tracciate.',
+      deleteMessage: 'Eliminare {{name}}? Le stampanti che lo usano non saranno più tracciate e i lavori che lo richiedevano accetteranno qualsiasi piatto dello stesso tipo.',
+      untickTitle: 'Piatto in uso',
+      untickMessage: '{{name}} è montato su {{printers}} stampante/i e {{jobs}} lavoro/i in coda lo attendono. Deselezionarlo lo nasconde per i nuovi lavori; quei lavori continueranno ad attenderlo.',
+      untickConfirm: 'Deseleziona comunque',
     },
     colorCatalog: {
       title: 'Catalogo colori',

@@ -53,6 +53,7 @@ export function BuildPlateSettings({ enabled, onToggle }: BuildPlateSettingsProp
   const [pattern, setPattern] = useState('');
   const [image, setImage] = useState('');
   const [toDelete, setToDelete] = useState<BuildPlate | null>(null);
+  const [toUntick, setToUntick] = useState<BuildPlate | null>(null);
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: BUILD_PLATES_QUERY_KEY });
 
@@ -150,7 +151,16 @@ export function BuildPlateSettings({ enabled, onToggle }: BuildPlateSettingsProp
                             type="checkbox"
                             checked={plate.enabled}
                             disabled={toggleMutation.isPending}
-                            onChange={(e) => toggleMutation.mutate({ id: plate.id, value: e.target.checked })}
+                            onChange={(e) => {
+                              const value = e.target.checked;
+                              // Unticking a plate in use hides it from new jobs,
+                              // but jobs already waiting for it keep waiting.
+                              if (!value && (plate.installed_on.length > 0 || plate.required_by_pending > 0)) {
+                                setToUntick(plate);
+                              } else {
+                                toggleMutation.mutate({ id: plate.id, value });
+                              }
+                            }}
                             className="mt-0.5 accent-bambu-green"
                           />
                           <div className="min-w-0 flex-1">
@@ -260,6 +270,24 @@ export function BuildPlateSettings({ enabled, onToggle }: BuildPlateSettingsProp
           </>
         )}
       </CardContent>
+
+      {toUntick && (
+        <ConfirmModal
+          title={t('settings.buildPlates.untickTitle')}
+          message={t('settings.buildPlates.untickMessage', {
+            name: toUntick.name,
+            printers: toUntick.installed_on.length,
+            jobs: toUntick.required_by_pending,
+          })}
+          confirmText={t('settings.buildPlates.untickConfirm')}
+          variant="warning"
+          onConfirm={() => {
+            toggleMutation.mutate({ id: toUntick.id, value: false });
+            setToUntick(null);
+          }}
+          onCancel={() => setToUntick(null)}
+        />
+      )}
 
       {toDelete && (
         <ConfirmModal

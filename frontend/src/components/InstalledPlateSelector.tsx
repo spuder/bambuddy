@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
@@ -6,6 +7,10 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { BUILD_PLATES_QUERY_KEY, groupPlatesByBaseType } from '../utils/buildPlates';
 import { PlateImage } from './PlateImage';
+import { ConfirmModal } from './ConfirmModal';
+
+// Printer states in which a plate is (or is about to be) printed on (#1306).
+const PRINTING_STATES = new Set(['PREPARE', 'SLICING', 'RUNNING', 'PAUSE']);
 
 /**
  * Which build plate is on this printer (#1306), as a one-click swap.
@@ -29,6 +34,16 @@ export function InstalledPlateSelector({ printer }: { printer: Printer }) {
     enabled: tracking,
   });
 
+  // Shares the printer card's status query, so this adds no polling of its own.
+  const { data: status } = useQuery({
+    queryKey: ['printerStatus', printer.id],
+    queryFn: () => api.getPrinterStatus(printer.id),
+    enabled: tracking,
+  });
+  const isPrinting = PRINTING_STATES.has(status?.state ?? '');
+  // A swap chosen while printing, waiting for the user to confirm it.
+  const [pendingSwap, setPendingSwap] = useState<{ plateId: number | null } | null>(null);
+
   const mutation = useMutation({
     mutationFn: (plateId: number | null) => api.setInstalledPlate(printer.id, plateId),
     onSuccess: () => {
@@ -42,7 +57,9 @@ export function InstalledPlateSelector({ printer }: { printer: Printer }) {
 
   const installedId = printer.installed_plate_id ?? null;
   const installed = plates.find((p) => p.id === installedId) ?? null;
-  const offered = plates.filter((p) => p.enabled || p.id === installedId);
+  // Unticked plates stay on offer while installed here or while a queued job
+  // still waits for them — otherwise that job could never be released.
+  const offered = plates.filter((p) => p.enabled || p.id === installedId || p.required_by_pending > 0);
   const canSwap = hasPermission('printers:control');
 
   return (
@@ -51,7 +68,14 @@ export function InstalledPlateSelector({ printer }: { printer: Printer }) {
       <select
         value={installedId ?? ''}
         disabled={!canSwap || mutation.isPending}
-        onChange={(e) => mutation.mutate(e.target.value === '' ? null : Number(e.target.value))}
+        onChange={(e) => {
+          const plateId = e.target.value === '' ? null : Number(e.target.value);
+          // Mid-print the plate on the bed is still the old one. Recording the
+          // next plate early lets the queue send a job for it the moment this
+          // print ends, so make sure the swap has really happened.
+          if (isPrinting) setPendingSwap({ plateId });
+          else mutation.mutate(plateId);
+        }}
         title={canSwap ? t('printers.buildPlate.swap') : t('printers.permission.noControl')}
         aria-label={t('printers.buildPlate.label')}
         className="min-w-0 max-w-full truncate bg-transparent text-xs text-bambu-gray hover:text-white border border-bambu-dark-tertiary rounded px-1.5 py-0.5 focus:border-bambu-green focus:outline-none disabled:opacity-60"
@@ -67,6 +91,19 @@ export function InstalledPlateSelector({ printer }: { printer: Printer }) {
           </optgroup>
         ))}
       </select>
+      {pendingSwap && (
+        <ConfirmModal
+          title={t('printers.buildPlate.confirmMidPrintTitle')}
+          message={t('printers.buildPlate.confirmMidPrintMessage', { name: printer.name })}
+          confirmText={t('printers.buildPlate.confirmMidPrintConfirm')}
+          variant="warning"
+          onConfirm={() => {
+            mutation.mutate(pendingSwap.plateId);
+            setPendingSwap(null);
+          }}
+          onCancel={() => setPendingSwap(null)}
+        />
+      )}
     </div>
   );
 }
