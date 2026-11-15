@@ -16,7 +16,7 @@ on:
       - ci/docker-dev-build
 
 env:
-  TARGET_REF: claude/build-plate-selector
+  TARGET_REF: feature/track_build_plates
 
 permissions:
   contents: read
